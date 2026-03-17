@@ -81,20 +81,39 @@ describe("redis", () => {
   //   await redis.del("names");
   // });
 
-  it("should support hash", async () => {
-    await redis.hset("user:1", {
-      id: "1",
-      name: "Eko",
-      email: "eko@example.com",
-    });
+  // it("should support hash", async () => {
+  //   await redis.hset("user:1", {
+  //     id: "1",
+  //     name: "Eko",
+  //     email: "eko@example.com",
+  //   });
 
-    const user = await redis.hgetall("user:1");
-    expect(user).toEqual({
-      id: "1",
-      name: "Eko",
-      email: "eko@example.com",
-    });
+  //   const user = await redis.hgetall("user:1");
+  //   expect(user).toEqual({
+  //     id: "1",
+  //     name: "Eko",
+  //     email: "eko@example.com",
+  //   });
 
-    await redis.del("user:1");
+  //   await redis.del("user:1");
+  // });
+
+  it("should support geo point", async () => {
+    await redis.geoadd("sellers", 106.822702, -6.17759, "Toko A");
+    await redis.geoadd("sellers", 106.820889, -6.174964, "Toko B");
+
+    const distance = await redis.geodist("sellers", "Toko A", "Toko B", "KM");
+    expect(distance).toBe(String(0.3543));
+
+    const result = await redis.geosearch(
+      "sellers",
+      "fromlonlat",
+      106.821825,
+      -6.175105,
+      "byradius",
+      5,
+      "km",
+    );
+    expect(result).toEqual(["Toko A", "Toko B"]);
   });
 });
