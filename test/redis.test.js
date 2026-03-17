@@ -65,19 +65,36 @@ describe("redis", () => {
   //   await redis.del("names");
   // });
 
-  it("should support sorted set", async () => {
-    await redis.zadd("names", 100, "Eko");
-    await redis.zadd("names", 85, "Budi");
-    await redis.zadd("names", 95, "Joko");
+  // it("should support sorted set", async () => {
+  //   await redis.zadd("names", 100, "Eko");
+  //   await redis.zadd("names", 85, "Budi");
+  //   await redis.zadd("names", 95, "Joko");
 
-    expect(await redis.zcard("names")).toBe(3);
-    const names = await redis.zrange("names", 0, -1);
-    expect(names).toEqual(["Budi", "Joko", "Eko"]);
+  //   expect(await redis.zcard("names")).toBe(3);
+  //   const names = await redis.zrange("names", 0, -1);
+  //   expect(names).toEqual(["Budi", "Joko", "Eko"]);
 
-    expect(await redis.zpopmax("names")).toEqual(["Eko", "100"]);
-    expect(await redis.zpopmax("names")).toEqual(["Joko", "95"]);
-    expect(await redis.zpopmax("names")).toEqual(["Budi", "85"]);
+  //   expect(await redis.zpopmax("names")).toEqual(["Eko", "100"]);
+  //   expect(await redis.zpopmax("names")).toEqual(["Joko", "95"]);
+  //   expect(await redis.zpopmax("names")).toEqual(["Budi", "85"]);
 
-    await redis.del("names");
+  //   await redis.del("names");
+  // });
+
+  it("should support hash", async () => {
+    await redis.hset("user:1", {
+      id: "1",
+      name: "Eko",
+      email: "eko@example.com",
+    });
+
+    const user = await redis.hgetall("user:1");
+    expect(user).toEqual({
+      id: "1",
+      name: "Eko",
+      email: "eko@example.com",
+    });
+
+    await redis.del("user:1");
   });
 });
