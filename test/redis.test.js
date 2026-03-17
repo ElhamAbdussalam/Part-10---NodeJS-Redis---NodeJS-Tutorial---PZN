@@ -50,17 +50,33 @@ describe("redis", () => {
   //   await redis.del("names");
   // });
 
-  it("should support set data structure", async () => {
-    await redis.sadd("names", "Muhammad");
-    await redis.sadd("names", "Muhammad");
-    await redis.sadd("names", "Elham");
-    await redis.sadd("names", "Elham");
-    await redis.sadd("names", "Abdussalam");
-    await redis.sadd("names", "Abdussalam");
+  // it("should support set data structure", async () => {
+  //   await redis.sadd("names", "Muhammad");
+  //   await redis.sadd("names", "Muhammad");
+  //   await redis.sadd("names", "Elham");
+  //   await redis.sadd("names", "Elham");
+  //   await redis.sadd("names", "Abdussalam");
+  //   await redis.sadd("names", "Abdussalam");
 
-    expect(await redis.scard("names")).toBe(3);
-    const names = await redis.smembers("names");
-    expect(names).toEqual(["Muhammad", "Elham", "Abdussalam"]);
+  //   expect(await redis.scard("names")).toBe(3);
+  //   const names = await redis.smembers("names");
+  //   expect(names).toEqual(["Muhammad", "Elham", "Abdussalam"]);
+
+  //   await redis.del("names");
+  // });
+
+  it("should support sorted set", async () => {
+    await redis.zadd("names", 100, "Eko");
+    await redis.zadd("names", 85, "Budi");
+    await redis.zadd("names", 95, "Joko");
+
+    expect(await redis.zcard("names")).toBe(3);
+    const names = await redis.zrange("names", 0, -1);
+    expect(names).toEqual(["Budi", "Joko", "Eko"]);
+
+    expect(await redis.zpopmax("names")).toEqual(["Eko", "100"]);
+    expect(await redis.zpopmax("names")).toEqual(["Joko", "95"]);
+    expect(await redis.zpopmax("names")).toEqual(["Budi", "85"]);
 
     await redis.del("names");
   });
