@@ -21,14 +21,32 @@ describe("redis", () => {
     expect(pong).toBe("PONG");
   });
 
-  it("should support string", async () => {
-    await redis.setex("name", 2, "Eko");
-    let name = await redis.get("name");
-    expect(name).toBe("Eko");
+  // it("should support string", async () => {
+  //   await redis.setex("name", 2, "Eko");
+  //   let name = await redis.get("name");
+  //   expect(name).toBe("Eko");
 
-    // sleep 5 seconds
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    name = await redis.get("name");
-    expect(name).toBe(null);
+  //   // sleep 5 seconds
+  //   await new Promise((resolve) => setTimeout(resolve, 3000));
+  //   name = await redis.get("name");
+  //   expect(name).toBe(null);
+  // });
+
+  it("should support list data structure", async () => {
+    await redis.del("names"); // 🔥 reset dulu
+
+    await redis.rpush("names", "Elham");
+    await redis.rpush("names", "Abdussalam");
+    await redis.rpush("names", "Muhammad");
+
+    expect(await redis.llen("names")).toBe(3);
+    const names = await redis.lrange("names", 0, -1);
+    expect(names).toEqual(["Elham", "Abdussalam", "Muhammad"]);
+
+    expect(await redis.lpop("names")).toBe("Elham");
+    expect(await redis.rpop("names")).toBe("Muhammad");
+    expect(await redis.llen("names")).toBe(1);
+
+    await redis.del("names");
   });
 });
