@@ -150,16 +150,51 @@ describe("redis", () => {
   //   expect(await redis.get("address")).toBe("Indonesia");
   // });
 
-  it("should support publish stream", async () => {
-    for (let i = 0; i < 10; i++) {
-      await redis.xadd(
-        "members",
-        "*",
-        "name",
-        `Eko ${i}`,
-        "address",
-        "Indonesia",
-      );
-    }
+  // it("should support publish stream", async () => {
+  //   for (let i = 0; i < 10; i++) {
+  //     await redis.xadd(
+  //       "members",
+  //       "*",
+  //       "name",
+  //       `Eko ${i}`,
+  //       "address",
+  //       "Indonesia",
+  //     );
+  //   }
+  // });
+
+  // it("should support customer group stream", async () => {
+  //   await redis.del("members");
+
+  //   await redis.xgroup("CREATE", "members", "group-1", "0", "MKSTREAM");
+  //   await redis.xgroup("CREATECONSUMER", "members", "group-1", "consumer-1");
+  //   await redis.xgroup("CREATECONSUMER", "members", "group-1", "consumer-2");
+  // });
+
+  it("should can consume stream", async () => {
+    await redis.del("members");
+
+    // bikin stream + group
+    await redis.xgroup("CREATE", "members", "group-1", "0", "MKSTREAM");
+
+    // tambahkan data ke stream
+    await redis.xadd("members", "*", "name", "elham");
+    await redis.xadd("members", "*", "name", "budi");
+
+    const result = await redis.xreadgroup(
+      "GROUP",
+      "group-1",
+      "consumer-1",
+      "COUNT",
+      2,
+      "BLOCK",
+      3000,
+      "STREAMS",
+      "members",
+      ">",
+    );
+
+    expect(result).not.toBeNull();
+    console.info(JSON.stringify(result, null, 2));
   });
 });
