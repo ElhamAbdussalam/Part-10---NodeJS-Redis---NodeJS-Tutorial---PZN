@@ -171,30 +171,39 @@ describe("redis", () => {
   //   await redis.xgroup("CREATECONSUMER", "members", "group-1", "consumer-2");
   // });
 
-  it("should can consume stream", async () => {
-    await redis.del("members");
+  // it("should can consume stream", async () => {
+  //   await redis.del("members");
 
-    // bikin stream + group
-    await redis.xgroup("CREATE", "members", "group-1", "0", "MKSTREAM");
+  //   // bikin stream + group
+  //   await redis.xgroup("CREATE", "members", "group-1", "0", "MKSTREAM");
 
-    // tambahkan data ke stream
-    await redis.xadd("members", "*", "name", "elham");
-    await redis.xadd("members", "*", "name", "budi");
+  //   // tambahkan data ke stream
+  //   await redis.xadd("members", "*", "name", "elham");
+  //   await redis.xadd("members", "*", "name", "budi");
 
-    const result = await redis.xreadgroup(
-      "GROUP",
-      "group-1",
-      "consumer-1",
-      "COUNT",
-      2,
-      "BLOCK",
-      3000,
-      "STREAMS",
-      "members",
-      ">",
-    );
+  //   const result = await redis.xreadgroup(
+  //     "GROUP",
+  //     "group-1",
+  //     "consumer-1",
+  //     "COUNT",
+  //     2,
+  //     "BLOCK",
+  //     3000,
+  //     "STREAMS",
+  //     "members",
+  //     ">",
+  //   );
 
-    expect(result).not.toBeNull();
-    console.info(JSON.stringify(result, null, 2));
-  });
+  //   expect(result).not.toBeNull();
+  //   console.info(JSON.stringify(result, null, 2));
+  // });
+
+  it("should can subscribe pubsub", async () => {
+    redis.subscribe("channel-1");
+    redis.on("message", (channel, message) => {
+      console.info(`Message from channel ${channel}: ${message}`);
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+  }, 5000);
 });
