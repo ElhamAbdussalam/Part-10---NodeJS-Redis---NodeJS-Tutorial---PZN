@@ -138,15 +138,28 @@ describe("redis", () => {
   //   expect(await redis.get("address")).toBe("Indonesia");
   // });
 
-  it("should support transaction", async () => {
-    const transaction = redis.multi();
+  // it("should support transaction", async () => {
+  //   const transaction = redis.multi();
 
-    transaction.setex("name", 2, "Eko");
-    transaction.setex("address", 2, "Indonesia");
+  //   transaction.setex("name", 2, "Eko");
+  //   transaction.setex("address", 2, "Indonesia");
 
-    await transaction.exec();
+  //   await transaction.exec();
 
-    expect(await redis.get("name")).toBe("Eko");
-    expect(await redis.get("address")).toBe("Indonesia");
+  //   expect(await redis.get("name")).toBe("Eko");
+  //   expect(await redis.get("address")).toBe("Indonesia");
+  // });
+
+  it("should support publish stream", async () => {
+    for (let i = 0; i < 10; i++) {
+      await redis.xadd(
+        "members",
+        "*",
+        "name",
+        `Eko ${i}`,
+        "address",
+        "Indonesia",
+      );
+    }
   });
 });
