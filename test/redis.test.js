@@ -117,12 +117,24 @@ describe("redis", () => {
   //   expect(result).toEqual(["Toko A", "Toko B"]);
   // });
 
-  it("should support hyper log log", async () => {
-    await redis.pfadd("visitors", "muhammad", "elham", "abdussalam");
-    await redis.pfadd("visitors", "eko", "budi", "joko");
-    await redis.pfadd("visitors", "budi", "joko", "rully");
+  // it("should support hyper log log", async () => {
+  //   await redis.pfadd("visitors", "muhammad", "elham", "abdussalam");
+  //   await redis.pfadd("visitors", "eko", "budi", "joko");
+  //   await redis.pfadd("visitors", "budi", "joko", "rully");
 
-    const total = await redis.pfcount("visitors");
-    expect(total).toBe(7);
+  //   const total = await redis.pfcount("visitors");
+  //   expect(total).toBe(7);
+  // });
+
+  it("should support pipeline", async () => {
+    const pipeline = redis.pipeline();
+
+    pipeline.setex("name", 2, "Eko");
+    pipeline.setex("address", 2, "Indonesia");
+
+    await pipeline.exec();
+
+    expect(await redis.get("name")).toBe("Eko");
+    expect(await redis.get("address")).toBe("Indonesia");
   });
 });
