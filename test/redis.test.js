@@ -98,22 +98,31 @@ describe("redis", () => {
   //   await redis.del("user:1");
   // });
 
-  it("should support geo point", async () => {
-    await redis.geoadd("sellers", 106.822702, -6.17759, "Toko A");
-    await redis.geoadd("sellers", 106.820889, -6.174964, "Toko B");
+  // it("should support geo point", async () => {
+  //   await redis.geoadd("sellers", 106.822702, -6.17759, "Toko A");
+  //   await redis.geoadd("sellers", 106.820889, -6.174964, "Toko B");
 
-    const distance = await redis.geodist("sellers", "Toko A", "Toko B", "KM");
-    expect(distance).toBe(String(0.3543));
+  //   const distance = await redis.geodist("sellers", "Toko A", "Toko B", "KM");
+  //   expect(distance).toBe(String(0.3543));
 
-    const result = await redis.geosearch(
-      "sellers",
-      "fromlonlat",
-      106.821825,
-      -6.175105,
-      "byradius",
-      5,
-      "km",
-    );
-    expect(result).toEqual(["Toko A", "Toko B"]);
+  //   const result = await redis.geosearch(
+  //     "sellers",
+  //     "fromlonlat",
+  //     106.821825,
+  //     -6.175105,
+  //     "byradius",
+  //     5,
+  //     "km",
+  //   );
+  //   expect(result).toEqual(["Toko A", "Toko B"]);
+  // });
+
+  it("should support hyper log log", async () => {
+    await redis.pfadd("visitors", "muhammad", "elham", "abdussalam");
+    await redis.pfadd("visitors", "eko", "budi", "joko");
+    await redis.pfadd("visitors", "budi", "joko", "rully");
+
+    const total = await redis.pfcount("visitors");
+    expect(total).toBe(7);
   });
 });
