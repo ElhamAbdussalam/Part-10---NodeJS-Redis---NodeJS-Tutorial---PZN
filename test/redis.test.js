@@ -126,13 +126,25 @@ describe("redis", () => {
   //   expect(total).toBe(7);
   // });
 
-  it("should support pipeline", async () => {
-    const pipeline = redis.pipeline();
+  // it("should support pipeline", async () => {
+  //   const pipeline = redis.pipeline();
 
-    pipeline.setex("name", 2, "Eko");
-    pipeline.setex("address", 2, "Indonesia");
+  //   pipeline.setex("name", 2, "Eko");
+  //   pipeline.setex("address", 2, "Indonesia");
 
-    await pipeline.exec();
+  //   await pipeline.exec();
+
+  //   expect(await redis.get("name")).toBe("Eko");
+  //   expect(await redis.get("address")).toBe("Indonesia");
+  // });
+
+  it("should support transaction", async () => {
+    const transaction = redis.multi();
+
+    transaction.setex("name", 2, "Eko");
+    transaction.setex("address", 2, "Indonesia");
+
+    await transaction.exec();
 
     expect(await redis.get("name")).toBe("Eko");
     expect(await redis.get("address")).toBe("Indonesia");
